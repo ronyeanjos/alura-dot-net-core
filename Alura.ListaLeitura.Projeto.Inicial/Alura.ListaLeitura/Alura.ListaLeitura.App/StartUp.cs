@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,11 +30,41 @@ namespace Alura.ListaLeitura.App
             _builder.MapRoute("Livros/Lidos", LivrosLidos);
             _builder.MapRoute("Cadastro/NovoLivro/{nome}/{autor}", NovoLivroParaLer);
             _builder.MapRoute("Livros/ExibeDetalhes/{id:int}", ExibirDetalhes);
+            _builder.MapRoute("Cadastro/NovoLivro", ExibeFormulario);
+            _builder.MapRoute("Cadastro/Incluir", ProcessaFormulario);
 
             var _rotas = _builder.Build();
             app.UseRouter(_rotas);
 
             //app.Run(Roteamento);
+        }
+
+        private Task ProcessaFormulario(HttpContext context)
+        {
+            var _novoLivro = new Livro()
+            {
+                Titulo = context.Request.Form["titulo"],
+                Autor = context.Request.Form["autor"]
+            };
+
+            var _repo = new LivroRepositorioCSV();
+            _repo.Incluir(_novoLivro);
+            return context.Response.WriteAsync("O livro foi adicionado com sucesso.");
+        }
+
+        private Task ExibeFormulario(HttpContext context)
+        {
+            var _html = CarregarHTML("formulario");
+            return context.Response.WriteAsync(_html);
+        }
+
+        private string CarregarHTML(string nomeArquivo)
+        {
+            var _nomeCompletoArquivo = $"Html/{nomeArquivo}.html";
+            using(var _arquivo = File.OpenText(_nomeCompletoArquivo))
+            {
+                return _arquivo.ReadToEnd();
+            }
         }
 
         public Task ExibirDetalhes(HttpContext context)
@@ -85,18 +116,42 @@ namespace Alura.ListaLeitura.App
         public Task LivrosParaLer(HttpContext context)
         {
             var _repo = new LivroRepositorioCSV();
-            return context.Response.WriteAsync(_repo.ParaLer.ToString());
+            var _conteudoArquivo = CarregarHTML("para-ler");
+
+            foreach (var livro in _repo.ParaLer.Livros)
+            {
+                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
+            }
+            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
+
+            return context.Response.WriteAsync(_conteudoArquivo);
         }
 
         public Task LivrosLendo(HttpContext context)
         {
             var _repo = new LivroRepositorioCSV();
-            return context.Response.WriteAsync(_repo.Lendo.ToString());
+            var _conteudoArquivo = CarregarHTML("lendo");
+
+            foreach (var livro in _repo.Lendo.Livros)
+            {
+                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
+            }
+            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
+
+            return context.Response.WriteAsync(_conteudoArquivo);
         }
         public Task LivrosLidos(HttpContext context)
         {
             var _repo = new LivroRepositorioCSV();
-            return context.Response.WriteAsync(_repo.Lidos.ToString());
+            var _conteudoArquivo = CarregarHTML("lidos");
+
+            foreach (var livro in _repo.Lidos.Livros)
+            {
+                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
+            }
+            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
+
+            return context.Response.WriteAsync(_conteudoArquivo);
         }
 
 
