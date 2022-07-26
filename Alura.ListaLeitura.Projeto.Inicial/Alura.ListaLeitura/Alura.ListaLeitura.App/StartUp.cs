@@ -19,24 +19,13 @@ namespace Alura.ListaLeitura.App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
+            services.AddMvc();
 
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            var _builder = new RouteBuilder(app);
-            
-            _builder.MapRoute("Livros/ParaLer", LivrosLogica.LivrosParaLer);
-            _builder.MapRoute("Livros/Lendo", LivrosLogica.LivrosLendo);
-            _builder.MapRoute("Livros/Lidos", LivrosLogica.LivrosLidos);
-            _builder.MapRoute("Livros/ExibeDetalhes/{id:int}", LivrosLogica.ExibirDetalhes);
-
-            _builder.MapRoute("Cadastro/NovoLivro/{nome}/{autor}", CadastroLogica.NovoLivroParaLer);
-            _builder.MapRoute("Cadastro/NovoLivro", CadastroLogica.ExibeFormulario);
-            _builder.MapRoute("Cadastro/Incluir", CadastroLogica.ProcessaFormulario);
-
-            var _rotas = _builder.Build();
-            app.UseRouter(_rotas);
+            app.UseMvcWithDefaultRoute();
         }
 
 

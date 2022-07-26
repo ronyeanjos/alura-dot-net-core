@@ -10,19 +10,16 @@ using Alura.ListaLeitura.App.Html;
 
 namespace Alura.ListaLeitura.App.Logica
 {
-    public class LivrosLogica
+    public class LivrosController
     {
-        public static Task ExibirDetalhes(HttpContext context)
+        public string ExibirDetalhes(int id)
         {
-            int id = Convert.ToInt16(context.GetRouteValue("id"));
             var _repo = new LivroRepositorioCSV();
             var _livro = _repo.Todos.First(l => l.Id == id);
-
-            return context.Response.WriteAsync(_livro.Detalhes());
-
+            return _livro.Detalhes();
         }
 
-        public static Task LivrosParaLer(HttpContext context)
+        public static Task ParaLer(HttpContext context)
         {
             var _repo = new LivroRepositorioCSV();
             var _conteudoArquivo = HtmlUtils.CarregarHTML("para-ler");
@@ -36,7 +33,7 @@ namespace Alura.ListaLeitura.App.Logica
             return context.Response.WriteAsync(_conteudoArquivo);
         }
 
-        public static Task LivrosLendo(HttpContext context)
+        public static Task Lendo(HttpContext context)
         {
             var _repo = new LivroRepositorioCSV();
             var _conteudoArquivo = HtmlUtils.CarregarHTML("lendo");
@@ -61,6 +58,11 @@ namespace Alura.ListaLeitura.App.Logica
             _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
 
             return context.Response.WriteAsync(_conteudoArquivo);
+        }
+
+        public string Teste()
+        {
+            return "Nova funcionalidade implementada.";
         }
 
     }
