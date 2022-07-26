@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Alura.ListaLeitura.App.Html;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.ListaLeitura.App.Logica
 {
-    public class LivrosController
+    public class LivrosController : Controller
     {
         public string ExibirDetalhes(int id)
         {
@@ -19,50 +20,24 @@ namespace Alura.ListaLeitura.App.Logica
             return _livro.Detalhes();
         }
 
-        public static Task ParaLer(HttpContext context)
+        public IActionResult ParaLer()
         {
             var _repo = new LivroRepositorioCSV();
-            var _conteudoArquivo = HtmlUtils.CarregarHTML("para-ler");
-
-            foreach (var livro in _repo.ParaLer.Livros)
-            {
-                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
-            }
-            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
-
-            return context.Response.WriteAsync(_conteudoArquivo);
+            ViewBag.Livros = _repo.ParaLer.Livros;
+            return View("listas");
         }
 
-        public static Task Lendo(HttpContext context)
+        public IActionResult Lendo()
         {
             var _repo = new LivroRepositorioCSV();
-            var _conteudoArquivo = HtmlUtils.CarregarHTML("lendo");
-
-            foreach (var livro in _repo.Lendo.Livros)
-            {
-                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
-            }
-            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
-
-            return context.Response.WriteAsync(_conteudoArquivo);
+            ViewBag.Livros = _repo.Lendo.Livros;
+            return View("listas");
         }
-        public static Task LivrosLidos(HttpContext context)
+        public IActionResult Lidos()
         {
             var _repo = new LivroRepositorioCSV();
-            var _conteudoArquivo = HtmlUtils.CarregarHTML("lidos");
-
-            foreach (var livro in _repo.Lidos.Livros)
-            {
-                _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", $"<li>{livro.Titulo} - {livro.Autor}</li>#NOVO-ITEM#");
-            }
-            _conteudoArquivo = _conteudoArquivo.Replace("#NOVO-ITEM#", "");
-
-            return context.Response.WriteAsync(_conteudoArquivo);
-        }
-
-        public string Teste()
-        {
-            return "Nova funcionalidade implementada.";
+            ViewBag.Livros = _repo.Lidos.Livros;
+            return View("listas");
         }
 
     }
